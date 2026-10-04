@@ -4,13 +4,13 @@
 Which code: the complete version is in HolidayConnector\_reference. Your own projects
 (HolidayConnector\holidayadapter and holidayprocessor) are at step 0, so they only start and
 report health. The steps below test the _reference version. Write what you see in the step log
-of the experiment document.
+of the experiment document. 
 
 Before you start
 - Docker Desktop running, Java 21 installed.
 - The local SaZ stack is up: sazinfrastrucure, branch feature/challengetool-connector, follow
   challengetool/docs/local-dev-setup.md (infrastructure, the two ZooKeeper nodes, then sazdata).
-- Open PowerShell in C:\Users\calas\Projects\HolidayConnector\_reference
+- Open PowerShell in C:\Users\username\Projects\HolidayConnector\_reference 
 
 1. Unit tests (no Docker needed)
    cd holidayadapter;   .\gradlew.bat test      expect: 13 tests passed
