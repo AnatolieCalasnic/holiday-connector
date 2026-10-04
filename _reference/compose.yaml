@@ -1,0 +1,59 @@
+# Runs the holiday connector next to the local SaZ stack (sazinfrastrucure/devenv).
+# Bring that stack up first; this joins its external `saz` network.
+#
+#   docker compose -p holidays up -d --build holiday-db holidayprocessor
+#   docker compose -p holidays up -d --build holidayadapter      # processor first: it binds the queue
+#
+# Never add --remove-orphans: it deletes containers defined in other folders.
+
+services:
+  holiday-db:
+    image: postgres:16-alpine
+    container_name: holiday_db
+    environment:
+      POSTGRES_DB: holidays
+      POSTGRES_USER: holidays
+      POSTGRES_PASSWORD: holidays
+    ports:
+      - "5440:5432"
+    volumes:
+      - holiday-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U holidays -d holidays"]
+      interval: 5s
+      retries: 10
+    networks: [saz]
+
+  holidayprocessor:
+    build: ./holidayprocessor
+    container_name: holidayprocessor
+    depends_on:
+      holiday-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://holiday-db:5432/holidays
+      DB_USERNAME: holidays
+      DB_PASSWORD: holidays
+      RABBITMQ_HOST: saz_datastream_rabbitmq
+    ports:
+      - "8096:8096"
+    networks: [saz]
+
+  holidayadapter:
+    build: ./holidayadapter
+    container_name: holidayadapter
+    environment:
+      MANAGEMENT_URL: http://sazmanagement:8092
+      NAGER_COUNTRIES: NL
+      # For a quick local check you can poll faster; never against a source that asks you not to.
+      # POLL_CRON: "0 */5 * * * *"
+    ports:
+      - "8095:8095"
+    networks: [saz]
+
+volumes:
+  holiday-db-data:
+
+networks:
+  saz:
+    external: true

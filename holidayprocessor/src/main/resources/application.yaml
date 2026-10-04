@@ -1,0 +1,12 @@
+server:
+  port: 8096
+
+spring:
+  application:
+    name: holidayprocessor
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

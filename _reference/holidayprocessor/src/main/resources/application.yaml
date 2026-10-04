@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT:8096}
+
+spring:
+  application:
+    name: holidayprocessor
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5440/holidays}
+    username: ${DB_USERNAME:holidays}
+    password: ${DB_PASSWORD:holidays}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        # Temporary errors (database down): 5 attempts, waiting 2, 4, 8, 16 s, then the DLQ.
+        retry:
+          enabled: true
+          max-attempts: 5
+          initial-interval: 2s
+          multiplier: 2
+          max-interval: 16s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+processor:
+  source: nagerdate
+  type-id: ${TYPE_ID:904}
+  exchange: saz-data-exchange
+  queue: nagerdate.processor
+  dead-letter-queue: nagerdate.processor.dlq

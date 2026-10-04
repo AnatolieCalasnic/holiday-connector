@@ -1,0 +1,12 @@
+server:
+  port: 8095
+
+spring:
+  application:
+    name: holidayadapter
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

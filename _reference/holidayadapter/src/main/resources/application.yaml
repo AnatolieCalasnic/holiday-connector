@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8095}
+
+spring:
+  application:
+    name: holidayadapter
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+adapter:
+  # sazmanagement base URL; registration is POST {management-url}/adapter/register
+  management-url: ${MANAGEMENT_URL:http://localhost:8092}
+  name: nagerdate
+  source: nagerdate
+  # Not registered anywhere yet (ADR-001 open point) - check with Jeffrey before sharing a stack.
+  provider-id: ${PROVIDER_ID:104}
+  type-id: ${TYPE_ID:904}
+  type-name: publicHoliday
+  processor: nagerdate.processor
+  # Daily at 06:00. Holidays change a few times a year; do not poll faster against the real API.
+  cron: ${POLL_CRON:0 0 6 * * *}
+  run-on-startup: ${RUN_ON_STARTUP:true}
+  # Local runs from the IDE only: the dataApi from registration can be a container hostname
+  # (http://ae91bd95bd6a:9100/data/push) the host cannot resolve. Leave empty in Docker/Kubernetes.
+  data-api-override: ${DATA_API_OVERRIDE:}
+
+nager:
+  base-url: ${NAGER_BASE_URL:https://date.nager.at/api/v3/}
+  countries: ${NAGER_COUNTRIES:NL}
+  # 0 = this year only, 1 = this year and next
+  years-ahead: ${NAGER_YEARS_AHEAD:1}
+  timeout: 10s

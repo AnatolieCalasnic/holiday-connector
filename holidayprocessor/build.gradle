@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'nl.innolics'
+version = '0.1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // web: an HTTP server
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // actuator: gives us /actuator/health
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // RabbitMQ (step 5) and PostgreSQL (step 7) are added when we get there.
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
